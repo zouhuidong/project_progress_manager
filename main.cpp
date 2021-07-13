@@ -7,7 +7,7 @@
 	1. 程序同目录下必须存在project.dat（存储项目进度数据），settings.ini（配置文件）
 	2. project.dat 文件格式要求
 		第一行：项目名
-		第二行：项目代码文件路径，如果有多个就每个写一行，可以写相对路径。如果要包含一个目录，就在此行写目录路径（如 "D:\myproject\web"），
+		第二行：项目代码文件路径，如果有多个就每个写一行，可以写相对路径。如果要包含一个目录，就在此行写目录路径（如 "D:\myproject\web"，可以是相对路径），
 			并在下一行写要纳入代码统计的文件的后缀名（如".cpp"），每个后缀名之间留一个空格，".*" 表示所有后缀名。
 		第三行：时间（格式：月.日，个位数日期无需补0为两位数） 代码行数（单位行） 代码长度（单位字节）
 		第n行以第三行类推
@@ -85,18 +85,27 @@ struct ProgressData
 //
 wstring* FindFiles(const wchar_t* lpPath, bool bGetChildFolder, bool bGetChildFolderFiles, wstring** p_wstrFilesList, int* pFilesNum, const wchar_t* secName = L".*", bool inner_flag = false)
 {
-	wchar_t szFind[MAX_PATH];
-	wchar_t szFile[MAX_PATH];
+	wchar_t szFind[MAX_PATH] = { 0 };
+	wchar_t szFile[MAX_PATH] = { 0 };
+	wchar_t szPath[MAX_PATH] = { 0 };
 
 	WIN32_FIND_DATA FindFileData;
 	static vector<wstring> files_list;
 
-	lstrcpy(szFind, lpPath);
-
 	// '/' 全部改 '\'
-	for (int i = 0; i < (int)lstrlen(szFind); i++)
-		if (szFind[i] == L'/')
-			szFind[i] = L'\\';
+	for (int i = 0; i < (int)lstrlen(lpPath); i++)
+	{
+		if (lpPath[i] == L'/')
+		{
+			szPath[i] = L'\\';
+		}
+		else
+		{
+			szPath[i] = lpPath[i];
+		}
+	}
+
+	lstrcpy(szFind, szPath);
 
 	// 末尾不含'\'时，带上'\'
 	if (szFind[lstrlen(szFind) - 1] != '\\')
@@ -112,7 +121,7 @@ wstring* FindFiles(const wchar_t* lpPath, bool bGetChildFolder, bool bGetChildFo
 		// 得到参数目录下的所有文件（含子文件夹内的文件）
 		wstring* p_wstrAllFilesList = NULL;
 		int nAllFilesNum = 0;
-		FindFiles(lpPath, false, true, &p_wstrAllFilesList, &nAllFilesNum);
+		FindFiles(szPath, false, true, &p_wstrAllFilesList, &nAllFilesNum);
 
 		// 遍历所有文件，查找符合后缀的文件
 		for (int i = 0; i < nAllFilesNum; i++)
@@ -148,12 +157,7 @@ wstring* FindFiles(const wchar_t* lpPath, bool bGetChildFolder, bool bGetChildFo
 				// 是文件夹
 				if (FindFileData.cFileName[0] != '.')
 				{
-					lstrcpy(szFile, lpPath);
-
-					// '/' 全部改 '\'
-					for (int i = 0; i < (int)lstrlen(szFile); i++)
-						if (szFile[i] == L'/')
-							szFile[i] = L'\\';
+					lstrcpy(szFile, szPath);
 
 					if (szFile[lstrlen(szFile) - 1] != '\\')
 						lstrcat(szFile, L"\\");
@@ -172,14 +176,16 @@ wstring* FindFiles(const wchar_t* lpPath, bool bGetChildFolder, bool bGetChildFo
 			{
 				if (szFile[0])
 				{
-					wstring filePath = lpPath;
-					if (lpPath[lstrlen(lpPath) - 1] != '\\')
+					wstring filePath = szPath;
+					if (szPath[lstrlen(szPath) - 1] != '\\')
 						filePath += L"\\";
 					filePath += FindFileData.cFileName;
 					files_list.push_back(filePath);
 				}
 				else
 				{
+					if(lstrlen(szFile) == 0)
+						lstrcpy(szFile, szPath);
 					wstring filePath = szFile;
 					filePath += FindFileData.cFileName;
 					files_list.push_back(filePath);
@@ -1032,7 +1038,7 @@ void ShowGraphComparison(const char* p_strProjectName, ProgressData* p_dataProje
 int main()
 {
 	printf("Project progress manager %s by huidong.\n", strVersion);
-	printf("Loading");
+	printf("Loading ...\n");
 
 	ProgressData* dataProject = new ProgressData[1024];
 	memset(dataProject, 0, sizeof(ProgressData) * 1024);
@@ -1059,15 +1065,11 @@ int main()
 		memset(strFilesPath[i], 0, 1024);
 	}
 
-	printf(".");
-
 	if (!GetProgressData(strDataFilePath, strProjectName, 1024, strFilesPath, 10240, 1024, &nFilesNum, dataProject, &nDataIndex))
 	{
 		printf("error get data form \"project.dat\".\n");
 		system("pause");
 	}
-
-	printf(".");
 
 	int nErrorFileId = GetFileData(strFilesPath, nFilesNum, &nTotalLine, &nTotalLength);
 	if (nErrorFileId != 0)
@@ -1076,8 +1078,6 @@ int main()
 		system("pause");
 	}
 
-	printf(".");
-
 	// update data
 	if (!UpdateDataFile(strDataFilePath, dataProject, nDataIndex, nThisMonth, nThisDay, nTotalLine, nTotalLength))
 	{
@@ -1085,14 +1085,10 @@ int main()
 		system("pause");
 	}
 
-	printf(".");
-
 	// 更新今日数据
 	if (!(dataProject[nDataIndex - 1].month == nThisMonth && dataProject[nDataIndex - 1].day == nThisDay))
 		nDataIndex++;
 	dataProject[nDataIndex - 1] = { nThisMonth,nThisDay,nTotalLine,nTotalLength };
-
-	printf(".");
 
 	// show graph
 	ShowGraphComparison(strProjectName, dataProject, nDataIndex);
