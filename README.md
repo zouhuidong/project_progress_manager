@@ -56,13 +56,13 @@ __所需文件要求__
 	    之间，则被判定为代码密度没问题。
 	    
 	    文件示例（默认设置）：
-	    [update_length]
-	level_1=10000
-	level_2=8000
-	level_3=5000
-	level_4=2800
-	level_5=1500
-	level_6=1000
-	[update_line]
-	low=7
-	max=100
+		[update_length]
+		level_1=10000
+		level_2=8000
+		level_3=5000
+		level_4=2800
+		level_5=1500
+		level_6=1000
+		[update_line]
+		low=7
+		max=100
