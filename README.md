@@ -5,4 +5,6 @@
 
 __效果图片：__
 
+![运行截图](https://github.com/zouhuidong/project_progress_manager/blob/master/screenshots/2.png)
+
 ![运行截图](https://github.com/zouhuidong/project_progress_manager/blob/master/screenshots/1.jpg)
