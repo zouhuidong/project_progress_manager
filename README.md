@@ -10,6 +10,11 @@ __效果图片：__
 ![运行截图](https://github.com/zouhuidong/project_progress_manager/blob/master/screenshots/1.jpg)
 
 
+__编译环境__
+
+VS2019 + EasyX(Ver 2021.02.24)（官网 easyx.cn ）
+
+
 ## 配置方式
 
 __所需文件要求__
