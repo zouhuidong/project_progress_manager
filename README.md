@@ -10,6 +10,8 @@ __效果图片：__
 ![运行截图](https://github.com/zouhuidong/project_progress_manager/blob/master/screenshots/1.jpg)
 
 
+## 配置方式
+
 __所需文件要求__
 
 	1. 程序同目录下必须存在project.dat（存储项目进度数据），settings.ini（配置文件）
