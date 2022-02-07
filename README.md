@@ -1,4 +1,9 @@
 # Project progress manager
+![Downloads](https://img.shields.io/github/downloads/zouhuidong/project_progress_manager/total)
+![GitHub Version](https://img.shields.io/github/v/release/zouhuidong/project_progress_manager)
+[![Blog](https://img.shields.io/badge/blog-huidong.xyz-green.svg)](http://huidong.xyz)
+[![EasyX](https://img.shields.io/badge/graphics-EasyX-orange.svg)](https://easyx.cn)
+
 项目进度管理器
 
 用easyx写的简易项目进度管理器，主要是想记录一下自己每天的项目进度。
